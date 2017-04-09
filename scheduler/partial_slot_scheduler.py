@@ -1,4 +1,5 @@
 from scheduler.slot_scheduler import SlotScheduler
+from scheduler.utilities import deep_merge
 
 
 class PartialSlotScheduler:
@@ -15,7 +16,7 @@ class PartialSlotScheduler:
             self.match_maker.remove_volunteer(name)
             self.jobs.remove_role(role)
 
-        return {
-            **partial_schedule,
-            **slot_scheduler.generate_schedule()
-        }
+        return deep_merge(
+            {},
+            partial_schedule,
+            slot_scheduler.generate_schedule())

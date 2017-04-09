@@ -1,13 +1,10 @@
-from random import Random, randint
-import copy
 import yaml
-import sys
+from copy import deepcopy
+from random import randint
+
 from scheduler.utilities import read_yaml_file, deep_merge
 from scheduler.validator.constraints import *
-from scheduler.partial_competition_scheduler import *
-from scheduler.judge import Judge
-from scheduler.scorer import calculate_score
-from scheduler.scheduling_exception import SchedulingException
+from scheduler.scheduler import get_best_schedule
 
 
 def hydrate_volunteers(volunteers, volunteer_profiles):
@@ -15,23 +12,13 @@ def hydrate_volunteers(volunteers, volunteer_profiles):
 
 
 def expand_permanent_roles_into_schedule(available_slots, permanent_roles):
-    return {slot: copy.deepcopy(permanent_roles) for slot in available_slots}
+    return {slot: deepcopy(permanent_roles) for slot in available_slots}
 
 
 def build_initial_schedule(available_slots, permanent_roles, tentative_schedule):
     return deep_merge({}, expand_permanent_roles_into_schedule(
         available_slots, permanent_roles
     ), tentative_schedule)
-
-
-def pick_best_schedule(champion, challenger):
-    (_, champ_score) = champion
-    (_, new_score) = challenger
-
-    if new_score < champ_score:
-        return challenger
-
-    return champion
 
 
 def run():
@@ -71,42 +58,14 @@ def run():
     competing_seeds = [randint(-100000000, 100000000)
                        for _ in range(50000)]
 
-    def generate_schedule(seed):
-        competition_scheduler = PartialCompetitionScheduler(
-                Random(seed),
-                people_constraints,
-                role_constraints)
-
-        try:
-            schedule = competition_scheduler.generate_schedule(
-                hydrated_volunteers_by_slot,
-                initial_schedule)
-            return calculate_score(schedule)
-        except SchedulingException:
-            return None
-
-    judge = Judge(generate_schedule, pick_best_schedule)
-
-    winning_seed, winning_score = judge.judge(
-        competing_seeds, ('NO_WINNER', sys.maxsize))
-
-    if winning_seed == 'NO_WINNER':
-        raise SchedulingException('Could not build an eligible schedule!')
-
-    competition_scheduler = PartialCompetitionScheduler(
-        Random(winning_seed),
-        people_constraints,
-        role_constraints)
-
-    schedule = competition_scheduler.generate_schedule(
+    result = get_best_schedule(
+        competing_seeds,
         hydrated_volunteers_by_slot,
+        people_constraints,
+        role_constraints,
         initial_schedule)
 
-    print(yaml.dump({
-        'schedule': schedule,
-        'winning_seed': winning_seed,
-        'winning_score': winning_score
-    }, default_flow_style=False))
+    print(yaml.dump(result, default_flow_style=False))
 
 
 if __name__ == "__main__":

@@ -13,8 +13,8 @@ setup(
 @task
 @virtualenv(dir=virtualenv_directory)
 @needs(['vendor'])
-def dev():
-    sh("python3 scheduler/app.py")
+def run():
+    sh("python3 main.py")
 
 
 @task
