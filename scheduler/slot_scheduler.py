@@ -1,4 +1,5 @@
-from scheduler.scheduling_exception import SchedulingException
+from scheduling_exception import SchedulingException
+
 
 class SlotScheduler:
     def __init__(self, jobs, matchmaker):

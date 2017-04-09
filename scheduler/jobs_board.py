@@ -1,4 +1,5 @@
-from scheduler.scheduling_exception import SchedulingException
+from scheduling_exception import SchedulingException
+
 
 class JobsBoard:
     def __init__(self, minimum_roles, ideal_roles, maximum_roles):

@@ -1,5 +1,5 @@
-from scheduler.validator.validator import is_valid
-from scheduler.scheduling_exception import SchedulingException
+from validator.validator import is_valid
+from scheduling_exception import SchedulingException
 
 
 class MatchMaker:
@@ -12,10 +12,7 @@ class MatchMaker:
             del self.volunteers[name]
 
     def suggest_volunteer_for_role(self, role):
-        if role not in self.constraints.keys():
-            raise SchedulingException('No constraints for role [{}]'.format(role))
-
-        relevant_constraints = self.constraints[role]
+        relevant_constraints = self.constraints.get(role, [])
         able_volunteers = [name for name, attributes in self.volunteers.items()
                            if is_valid(attributes, relevant_constraints)]
 

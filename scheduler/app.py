@@ -10,22 +10,6 @@ from validator.constraints import *
 from constraints.constraint import Verdict
 from role_selector import RoleSelector
 
-def merge_dicts(source, destination):
-    for key, value in source.items():
-        if isinstance(value, dict):
-            # get node or create one
-            node = destination.setdefault(key, {})
-            merge_dicts(value, node)
-        else:
-            destination[key] = value
-
-    return destination
-
-
-def read_yaml_file(file_name):
-    with open(file_name) as f:
-        return yaml.load(f.read())
-
 
 def get_volunteer_schedules(schedule):
     volunteer_schedules = {}

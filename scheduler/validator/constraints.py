@@ -1,5 +1,5 @@
 def not_a_rookie(volunteer):
-    return not volunteer['is_a_rookie']
+    return not volunteer['is_rookie']
 
 
 def can_speak(volunteer):
