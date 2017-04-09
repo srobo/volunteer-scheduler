@@ -1,9 +1,13 @@
+from random import Random
 from unittest import TestCase
 from scheduler.tests.helpers import *
+from scheduler.partial_competition_scheduler import PartialCompetitionScheduler
 
 
 class TestPartialCompetitionScheduler(TestCase):
     def setUp(self):
+        self.NOT_SO_RANDOM = Random(2232)
+
         self.volunteers = {
             'Jack': create_chef('Jack'),
             'Jill': create_delivery_driver('Jill'),
@@ -52,6 +56,7 @@ class TestPartialCompetitionScheduler(TestCase):
         }
 
         scheduler = PartialCompetitionScheduler(
+            self.NOT_SO_RANDOM,
             self.people_constraints,
             self.role_constraints)
 
@@ -72,18 +77,17 @@ class TestPartialCompetitionScheduler(TestCase):
         self.assertEqual(schedule, {
             'first-slot': {
                 'Jack': 'manager',
+                'Jill': 'critic',
                 'John': 'chef',
-                'Sarah': 'chef',
-                'Jill': 'delivery-driver',
-                'Sue': 'critic'
+                'Sue': 'delivery-driver',
+                'Sarah': 'delivery-driver'
             },
             'second-slot': {
                 'Jack': 'manager',
                 'John': 'chef',
                 'Sarah': 'chef',
+                'Jill': 'critic',
                 'Alan': 'chef',
-                'Jill': 'delivery-driver',
-                'Peter': 'critic'
+                'Peter': 'delivery-driver'
             }
         })
-

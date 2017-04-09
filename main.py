@@ -1,3 +1,4 @@
+from random import Random
 import copy
 import yaml
 from scheduler.utilities import read_yaml_file, merge_dicts
@@ -54,7 +55,9 @@ def run():
     }
 
     competition_scheduler = PartialCompetitionScheduler(
-        people_constraints, role_constraints)
+        Random(23456),
+        people_constraints,
+        role_constraints)
 
     schedule = competition_scheduler.generate_schedule(
         hydrated_volunteers_by_slot,

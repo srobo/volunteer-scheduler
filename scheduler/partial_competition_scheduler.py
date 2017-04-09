@@ -2,18 +2,27 @@ from scheduler.jobs_board import JobsBoard
 from scheduler.match_maker import MatchMaker
 from scheduler.partial_slot_scheduler import PartialSlotScheduler
 from scheduler.competition_scheduler import expand_roles
+from scheduler.utilities import sample
 
 
 class PartialCompetitionScheduler:
-    def __init__(self, people_constraints, role_constraints):
+    def __init__(self, random, people_constraints, role_constraints):
+        self.random = random
         self.people_constraints = people_constraints
         self.role_constraints = {
             slot: expand_roles(roles)
             for slot, roles in role_constraints.items()
         }
 
+    def shuffle(self, l):
+        return sample(self.random, l)
+
     def generate_slot(self, slot, volunteers, roles, partial_schedule):
-        jobs = JobsBoard(*roles)
+        min_roles, ideal_roles, max_roles = roles
+        jobs = JobsBoard(
+            self.shuffle(min_roles),
+            self.shuffle(ideal_roles),
+            self.shuffle(max_roles))
         matchmaker = MatchMaker(volunteers, self.people_constraints)
         slot_scheduler = PartialSlotScheduler(jobs, matchmaker)
         try:

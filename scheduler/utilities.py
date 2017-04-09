@@ -1,7 +1,6 @@
-import random
 import yaml
 
-def sample(l):
+def sample(random, l):
     return random.sample(l, len(l))
 
 def merge_dicts(source, destination):
