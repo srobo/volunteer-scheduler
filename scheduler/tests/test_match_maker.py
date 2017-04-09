@@ -4,7 +4,7 @@ from scheduler.scheduling_exception import SchedulingException
 from scheduler.tests.helpers import *
 
 
-class TestMatchmaker(TestCase):
+class TestMatchMaker(TestCase):
     def setUp(self):
         self.volunteers = {
             'Jack': create_chef('Jack'),
