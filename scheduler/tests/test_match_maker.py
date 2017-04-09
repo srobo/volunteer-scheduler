@@ -38,3 +38,18 @@ class TestMatchMaker(TestCase):
 
         with self.assertRaises(MatchMakingException):
             matchmaker.suggest_volunteer_for_role('chef')
+
+    def test_should_return_number_of_available_volunteers(self):
+        matchmaker = MatchMaker(self.volunteers, self.constraints_by_role)
+
+        self.assertEquals(
+            matchmaker.number_of_available_volunteers(),
+            3
+        )
+
+        matchmaker.remove_volunteer('Jack')
+
+        self.assertEquals(
+            matchmaker.number_of_available_volunteers(),
+            2
+        )

@@ -23,6 +23,9 @@ class JobsBoard:
 
         return necessary_roles == []
 
+    def minimum_number_of_volunteers(self):
+        return len(self.minimum)
+
     def unfilled_necessary_roles(self, filled_roles):
         necessary_roles = self.minimum[:]
 

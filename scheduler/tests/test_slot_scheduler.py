@@ -17,14 +17,14 @@ class TestSlotScheduler(TestCase):
         self.constraints_by_role = {
             'chef': [can_cook],
             'taster': [can_critique],
-            'delivery': [can_deliver]
+            'delivery-driver': [can_deliver]
         }
 
     def test_generates_a_schedule(self):
         matchmaker = MatchMaker(self.volunteers, self.constraints_by_role)
         jobs = JobsBoard(
             ['chef'],
-            ['delivery'],
+            ['delivery-driver'],
             ['taster']
         )
         scheduler = SlotScheduler(jobs, matchmaker)
@@ -32,16 +32,29 @@ class TestSlotScheduler(TestCase):
         assert scheduler.generate_schedule() == {
             'Jack': 'chef',
             'Sue': 'taster',
-            'Jill': 'delivery'
+            'Jill': 'delivery-driver'
         }
 
     def test_raises_exception_when_not_all_necessary_roles_filled(self):
         matchmaker = MatchMaker(self.volunteers, self.constraints_by_role)
         jobs = JobsBoard(
             ['chef', 'chef'],
-            ['delivery'],
+            ['delivery-driver'],
             ['taster']
         )
+        scheduler = SlotScheduler(jobs, matchmaker)
+
+        with self.assertRaises(SchedulingException):
+            scheduler.generate_schedule()
+
+    def test_raises_exception_when_not_enough_volunteers(self):
+        matchmaker = MatchMaker(self.volunteers, self.constraints_by_role)
+        jobs = JobsBoard(
+            ['chef', 'delivery-driver', 'delivery-driver', 'taster'],
+            ['delivery-driver'],
+            ['taster']
+        )
+
         scheduler = SlotScheduler(jobs, matchmaker)
 
         with self.assertRaises(SchedulingException):

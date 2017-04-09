@@ -40,4 +40,3 @@ class TestPartialSlotScheduler(TestCase):
             'Sue': 'taster',
             'Jill': 'delivery'
         }
-

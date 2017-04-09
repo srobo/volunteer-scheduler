@@ -23,3 +23,6 @@ class MatchMaker:
             raise MatchMakingException('No volunteers can fill the role [{}]'.format(role))
 
         return able_volunteers[0]
+
+    def number_of_available_volunteers(self):
+        return len(self.volunteers.keys())

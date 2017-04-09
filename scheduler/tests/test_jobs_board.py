@@ -11,12 +11,14 @@ class TestJobsBoard(TestCase):
             ['third-role']
         )
 
-        assert [x for x in jobs.priority_order()] == [
-            'first-role',
-            'second-role',
-            'first-role',
-            'third-role'
-        ]
+        self.assertEquals(
+            [x for x in jobs.priority_order()],
+            [
+                'first-role',
+                'second-role',
+                'first-role',
+                'third-role'
+            ])
 
     def test_should_return_true_when_all_necessary_roles_filled(self):
         jobs = JobsBoard(
@@ -25,10 +27,10 @@ class TestJobsBoard(TestCase):
             ['third-role']
         )
 
-        assert jobs.is_sufficient([
+        self.assertTrue(jobs.is_sufficient([
             'first-role',
             'second-role'
-        ]) is True
+        ]))
 
     def test_should_return_false_when_necessary_roles_remaining(self):
         jobs = JobsBoard(
@@ -37,11 +39,11 @@ class TestJobsBoard(TestCase):
             ['third-role']
         )
 
-        assert jobs.is_sufficient([
+        self.assertFalse(jobs.is_sufficient([
             'first-role',
             'first-role',
             'third-role'
-        ]) is False
+        ]))
 
     def test_should_remove_job(self):
         jobs = JobsBoard(
@@ -52,4 +54,13 @@ class TestJobsBoard(TestCase):
 
         jobs.remove_role('second-role')
 
-        assert jobs.is_sufficient([]) is True
+        self.assertTrue(jobs.is_sufficient([]))
+
+    def test_should_return_minimum_number_of_volunteers(self):
+        jobs = JobsBoard(
+            ['first-role', 'second-role', 'third-role'],
+            ['fourth-role'],
+            []
+        )
+
+        self.assertEquals(jobs.minimum_number_of_volunteers(), 3)

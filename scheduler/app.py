@@ -160,7 +160,7 @@ if __name__ == "__main__":
         'kit-return': [understands_kit]
     }
 
-    seeds = [random.randint(-100000000, 100000000) for r in range(3000)]
+    seeds = [random.randint(-100000000, 100000000) for r in range(25000)]
 
     available_slots = slots_and_volunteers.keys()
 

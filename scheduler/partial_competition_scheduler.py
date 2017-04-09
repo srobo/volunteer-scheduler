@@ -3,6 +3,7 @@ from scheduler.match_maker import MatchMaker
 from scheduler.partial_slot_scheduler import PartialSlotScheduler
 from scheduler.competition_scheduler import expand_roles
 from scheduler.utilities import sample
+from scheduler.scheduling_exception import SchedulingException
 
 
 class PartialCompetitionScheduler:
@@ -25,11 +26,11 @@ class PartialCompetitionScheduler:
             self.shuffle(max_roles))
         matchmaker = MatchMaker(volunteers, self.people_constraints)
         slot_scheduler = PartialSlotScheduler(jobs, matchmaker)
+
         try:
             return slot_scheduler.generate_schedule(partial_schedule)
         except Exception as ex:
-            print("Exception in slot [{}]".format(slot))
-            raise ex
+            raise SchedulingException("Exception in slot [{}]".format(slot), ex)
 
     def generate_schedule(self, volunteers_by_slot, partial_schedule):
         return {
