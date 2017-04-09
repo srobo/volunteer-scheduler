@@ -2,36 +2,45 @@ def can_cook(volunteer):
     return volunteer['can_cook']
 
 
-def can_ride_a_bike(volunteer):
-    return volunteer['rides_a_bike']
+def can_deliver(volunteer):
+    return volunteer['can_deliver']
 
 
-def can_eat(volunteer):
-    return volunteer['can_eat']
+def can_critique(volunteer):
+    return volunteer['can_critique']
+
+
+def create_volunteer(name, can_cook, can_deliver, can_critique):
+    return {
+        name: name,
+        'can_cook': can_cook,
+        'can_deliver': can_deliver,
+        'can_critique': can_critique
+    }
 
 
 def create_chef(name):
-    return {
-        'name': name,
-        'can_cook': True,
-        'rides_a_bike': False,
-        'can_eat': False
-    }
+    return create_volunteer(
+        name,
+        can_cook=True,
+        can_deliver=False,
+        can_critique=False
+    )
 
 
 def create_delivery_driver(name):
-    return {
-        'name': name,
-        'can_cook': False,
-        'rides_a_bike': True,
-        'can_eat': False
-    }
+    return create_volunteer(
+        name,
+        can_cook=False,
+        can_deliver=True,
+        can_critique=False
+    )
 
 
 def create_food_critic(name):
-    return {
-        'name': name,
-        'can_cook': False,
-        'rides_a_bike': False,
-        'can_eat': True
-    }
+    return create_volunteer(
+        name,
+        can_cook=False,
+        can_deliver=False,
+        can_critique=True
+    )

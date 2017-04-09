@@ -1,5 +1,8 @@
 from scheduler.validator.validator import is_valid
-from scheduler.scheduling_exception import SchedulingException
+
+
+class MatchMakingException(Exception):
+    pass
 
 
 class MatchMaker:
@@ -17,6 +20,6 @@ class MatchMaker:
                            if is_valid(attributes, relevant_constraints)]
 
         if not able_volunteers:
-            raise SchedulingException('No volunteers can fill the role [{}]'.format(role))
+            raise MatchMakingException('No volunteers can fill the role [{}]'.format(role))
 
         return able_volunteers[0]

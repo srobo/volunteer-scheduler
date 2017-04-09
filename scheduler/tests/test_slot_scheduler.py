@@ -16,8 +16,8 @@ class TestSlotScheduler(TestCase):
 
         self.constraints_by_role = {
             'chef': [can_cook],
-            'taster': [can_eat],
-            'delivery': [can_ride_a_bike]
+            'taster': [can_critique],
+            'delivery': [can_deliver]
         }
 
     def test_generates_a_schedule(self):

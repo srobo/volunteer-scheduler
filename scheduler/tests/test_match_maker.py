@@ -1,6 +1,5 @@
 from unittest import TestCase
-from scheduler.match_maker import MatchMaker
-from scheduler.scheduling_exception import SchedulingException
+from scheduler.match_maker import MatchMaker, MatchMakingException
 from scheduler.tests.helpers import *
 
 
@@ -14,8 +13,8 @@ class TestMatchMaker(TestCase):
 
         self.constraints_by_role = {
             'chef': [can_cook],
-            'taster': [can_eat],
-            'delivery': [can_ride_a_bike]
+            'taster': [can_critique],
+            'delivery': [can_deliver]
         }
 
     def test_should_return_volunteer_name(self):
@@ -29,7 +28,7 @@ class TestMatchMaker(TestCase):
         volunteers = {}
         matchmaker = MatchMaker(volunteers, self.constraints_by_role)
 
-        with self.assertRaises(SchedulingException):
+        with self.assertRaises(MatchMakingException):
             matchmaker.suggest_volunteer_for_role('chef')
 
     def test_should_remove_volunteer(self):
@@ -37,5 +36,5 @@ class TestMatchMaker(TestCase):
 
         matchmaker.remove_volunteer('Jack')
 
-        with self.assertRaises(SchedulingException):
+        with self.assertRaises(MatchMakingException):
             matchmaker.suggest_volunteer_for_role('chef')

@@ -1,6 +1,7 @@
-from match_maker import MatchMaker
-from jobs_board import JobsBoard
-from slot_scheduler import SlotScheduler
+from scheduler.match_maker import MatchMaker
+from scheduler.jobs_board import JobsBoard
+from scheduler.slot_scheduler import SlotScheduler
+from scheduler.scheduling_exception import SchedulingException
 
 
 def expand_roles(available_roles):
@@ -31,13 +32,17 @@ class CompetitionScheduler:
             for slot, roles in role_constraints.items()
         }
 
-    def generate_slot(self, volunteers, roles):
-        print(roles)
+    def generate_slot(self, slot, volunteers, roles):
         jobs = JobsBoard(*roles)
         matchmaker = MatchMaker(volunteers, self.people_constraints)
         slot_scheduler = SlotScheduler(jobs, matchmaker)
-        return slot_scheduler.generate_schedule()
+
+        try:
+            return slot_scheduler.generate_schedule()
+        except SchedulingException as ex:
+            print("EXCEPTION IN SLOT [{}]".format(slot))
+            raise ex
 
     def generate_schedule(self, volunteers_by_slot):
-        return {slot: self.generate_slot(volunteers_by_slot[slot], self.role_constraints[slot])
+        return {slot: self.generate_slot(slot, volunteers_by_slot[slot], self.role_constraints[slot])
                 for slot, volunteers in volunteers_by_slot.items()}

@@ -1,3 +1,4 @@
+from scheduler.match_maker import MatchMakingException
 from scheduler.scheduling_exception import SchedulingException
 
 
@@ -10,10 +11,12 @@ class SlotScheduler:
         schedule = {}
 
         for job in self.jobs.priority_order():
-            nominee = self.matchmaker.suggest_volunteer_for_role(job)
-            schedule[nominee] = job
-
-            self.matchmaker.remove_volunteer(nominee)
+            try:
+                nominee = self.matchmaker.suggest_volunteer_for_role(job)
+                schedule[nominee] = job
+                self.matchmaker.remove_volunteer(nominee)
+            except MatchMakingException as ex:
+                pass
 
         if not self.jobs.is_sufficient(list(schedule.values())):
             raise SchedulingException('Not all necessary roles are filled')
