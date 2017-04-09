@@ -2,17 +2,17 @@ from scheduler.slot_scheduler import SlotScheduler
 
 
 class PartialSlotScheduler:
-    def __init__(self, jobs, matchmaker):
+    def __init__(self, jobs, match_maker):
         self.jobs = jobs
-        self.matchmaker = matchmaker
+        self.match_maker = match_maker
 
     def generate_schedule(self, partial_schedule):
         slot_scheduler = SlotScheduler(
             self.jobs,
-            self.matchmaker)
+            self.match_maker)
 
         for name, role in partial_schedule.items():
-            self.matchmaker.remove_volunteer(name)
+            self.match_maker.remove_volunteer(name)
             self.jobs.remove_role(role)
 
         return {

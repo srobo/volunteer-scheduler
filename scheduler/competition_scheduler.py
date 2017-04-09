@@ -32,17 +32,12 @@ class CompetitionScheduler:
             for slot, roles in role_constraints.items()
         }
 
-    def generate_slot(self, slot, volunteers, roles):
+    def generate_slot(self, volunteers, roles):
         jobs = JobsBoard(*roles)
         matchmaker = MatchMaker(volunteers, self.people_constraints)
         slot_scheduler = SlotScheduler(jobs, matchmaker)
-
-        try:
-            return slot_scheduler.generate_schedule()
-        except SchedulingException as ex:
-            print("EXCEPTION IN SLOT [{}]".format(slot))
-            raise ex
+        return slot_scheduler.generate_schedule()
 
     def generate_schedule(self, volunteers_by_slot):
-        return {slot: self.generate_slot(slot, volunteers_by_slot[slot], self.role_constraints[slot])
+        return {slot: self.generate_slot(volunteers_by_slot[slot], self.role_constraints[slot])
                 for slot, volunteers in volunteers_by_slot.items()}

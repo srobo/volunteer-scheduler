@@ -10,6 +10,14 @@ def can_critique(volunteer):
     return volunteer['can_critique']
 
 
+def build_role(min, ideal, max):
+    return {
+        'min': min,
+        'ideal': ideal,
+        'max': max
+    }
+
+
 def create_volunteer(name, can_cook, can_deliver, can_critique):
     return {
         name: name,
