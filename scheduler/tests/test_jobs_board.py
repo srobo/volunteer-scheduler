@@ -1,5 +1,6 @@
 from unittest import TestCase
 from scheduler.jobs_board import JobsBoard
+from scheduler.scheduling_exception import SchedulingException
 
 
 class TestJobsBoard(TestCase):
@@ -42,3 +43,23 @@ class TestJobsBoard(TestCase):
             'third-role'
         ]) is False
 
+    def test_should_remove_job(self):
+        jobs = JobsBoard(
+            ['second-role'],
+            ['first-role'],
+            ['third-role']
+        )
+
+        jobs.remove_role('second-role')
+
+        assert jobs.is_sufficient([]) is True
+
+    def test_should_raise_error_when_removing_job_that_is_not_present(self):
+        jobs = JobsBoard(
+            ['second-role'],
+            ['first-role'],
+            ['third-role']
+        )
+
+        with self.assertRaises(SchedulingException):
+            jobs.remove_role('some-other-role')
