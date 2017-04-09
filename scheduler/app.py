@@ -1,3 +1,4 @@
+import copy
 import sys
 import yaml
 import random
@@ -5,8 +6,20 @@ from collections import Counter
 
 from scheduling_exception import SchedulingException
 from constraints.position_constraints import *
+from validator.constraints import *
 from constraints.constraint import Verdict
 from role_selector import RoleSelector
+
+def merge_dicts(source, destination):
+    for key, value in source.items():
+        if isinstance(value, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            merge_dicts(value, node)
+        else:
+            destination[key] = value
+
+    return destination
 
 
 def read_yaml_file(file_name):
@@ -65,46 +78,14 @@ def generate_schedule(slots, roles, volunteer_profiles, position_constraints, de
         role_selector = RoleSelector(available_roles)
         constraints = position_constraints
 
-        schedule[slot] = schedule.get(slot, {
-            "rspanton": "competition-event-coordinator",
-            "rbarlow": "competition-team-support-coordinator",
-            "sbedford": "competition-team-coordinator",
-            "tscarsbrook": "competition-health-and-safety-coordinator",
-            "jthompson": "volunteer-coordinator",
-            "plaw": "competition-software-coordinator",
-            "tleese": "head-match-scorer",
-            "pdavies": "head-shepherd"
-        })
-
-        if role_selector.is_role_needed('intro-briefer'):
-            schedule[slot]['rspanton'] = 'intro-briefer'
-
-        if role_selector.is_role_needed('tinker-co-ordinator'):
-            schedule[slot]['jhoward'] = 'tinker-co-ordinator'
-
-        if slot == 'saturday-0830-1100':
-            schedule[slot]['abarrettsprot'] = 'robot-inspector'
-            schedule[slot]['jgough'] = 'robot-inspector'
-
-        if slot == 'sunday-0830-1100':
-            schedule[slot]['jgough'] = 'robot-inspector'
-
-        if slot in ['sunday-0830-1100', 'sunday-1100-1300', 'sunday-1300-1500', 'sunday-1500-1730']:
-            schedule[slot]['gpayne'] = 'commentator'
-
-        if slot in ['sunday-0830-1100', 'sunday-1100-1300', 'sunday-1300-1500']:
-            schedule[slot]['senglish'] = 'commentator'
-
         if slot == 'sunday-1500-1730':
-            schedule[slot]['senglish'] = 'arena-changeroverer'
-
-        if slot == 'sunday-1500-1730':
-            constraints.append(no_rookie_match_scorers_constraint)
+            constraints['match-scorer'] = constraints['match-scorer'].append(not_a_rookie)
 
         # Remove manually filled roles from available role selection
         for role in schedule.get(slot, {}).values():
             role_selector.fill_role(role)
 
+        # Remove volunteers already down to volunteer
         for volunteer in schedule.get(slot, {}).keys():
             if volunteer in volunteers:
                 del volunteers[volunteers.index(volunteer)]
@@ -168,37 +149,54 @@ def pick_best_schedule(a, b):
         return a
     return b
 
-# if __name__ == "__main__":
-#     args = sys.argv[1:]
-#     volunteers_file = read_yaml_file(args[0])
-#     roles = read_yaml_file(args[1])
-#
-#     slots = volunteers_file['slots']
-#     volunteer_profiles = volunteers_file['volunteers']
-#
-#     position_constraints = [
-#         intro_briefer_constraint,
-#         commentator_constraint,
-#         refreshments_constraint,
-#         inspector_constraint,
-#         shepherd_constraint,
-#         roving_helper_constraint,
-#         scorer_constraint,
-#         tinker_coordinator_constraint,
-#         kit_return_constraint,
-#         helpdesk_volunteer_constraint
-#     ]
-#
-#     seeds = [random.randint(-100000000, 100000000) for r in range(3000)]
-#     schedules = [schedule_with_seed(
-#         seed,
-#         slots,
-#         roles,
-#         volunteer_profiles,
-#         position_constraints) for seed in seeds]
-#
-#     best_schedule = reduce(pick_best_schedule, schedules, {
-#         'score': 99999999999
-#     })
-#
-#     print(yaml.dump(best_schedule, default_flow_style=False))
+def expand_schedule(available_slots, permanent_roles):
+    return {slot: copy.deepcopy(permanent_roles) for slot in available_slots}
+
+def build_initial_schedule(available_slots, permanent_roles, tentative_schedule):
+    return merge_dicts(expand_schedule(available_slots, permanent_roles), tentative_schedule)
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    volunteers_file = read_yaml_file(args[0])
+    roles = read_yaml_file(args[1])
+
+    slots_and_volunteers = volunteers_file['slots']
+    volunteer_profiles = volunteers_file['volunteers']
+
+    constraints = {
+        'intro-briefer': [can_speak, not_a_rookie],
+        'commentator': [can_speak, not_a_rookie],
+        'refreshments': [can_move_around],
+        'robot-inspector': [understands_kit, not_a_rookie],
+        'helpdesk-volunteer': [understands_kit],
+        'shepherd': [can_move_around],
+        'tinker-co-ordinator': [not_a_rookie],
+        'roving-helper': [understands_kit, can_move_around],
+        'match-scorer': [can_move_around],
+        'kit-return': [understands_kit]
+    }
+
+    seeds = [random.randint(-100000000, 100000000) for r in range(3000)]
+
+    available_slots = slots_and_volunteers.keys()
+
+    initial_schedule = build_initial_schedule(
+        available_slots,
+        read_yaml_file('tmp/permanent_roles.yml'),
+        read_yaml_file('tmp/tentative_schedule.yml'))
+
+    print("SLOTS AND VOLUNTEERS ", yaml.dump(slots_and_volunteers))
+
+    schedules = [schedule_with_seed(
+        seed,
+        slots_and_volunteers,
+        roles,
+        volunteer_profiles,
+        constraints,
+        default_schedule=initial_schedule) for seed in seeds]
+
+    best_schedule = reduce(pick_best_schedule, schedules, {
+        'score': 99999999999
+    })
+
+    print(yaml.dump(best_schedule, default_flow_style=False))
