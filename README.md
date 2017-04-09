@@ -185,8 +185,8 @@ people_constraints = {
 }
 ```
 
-For each role, there are a list of constraints. Constraints take a volunteer profile, and return True
-if the volunteer is capable of performing that role, or false if they are not.
+For each role, there are a list of constraints. Constraints are pure functions which take a volunteer 
+profile, and return `True` if the volunteer is capable of performing that role, or `False` if they are not.
 
 ## Scoring
 
