@@ -1,32 +1,5 @@
 from unittest import TestCase
-from scheduler.jobs_board import JobsBoard
-from scheduler.match_maker import MatchMaker
-from scheduler.partial_slot_scheduler import PartialSlotScheduler
-from scheduler.competition_scheduler import expand_roles
 from scheduler.tests.helpers import *
-
-
-class PartialCompetitionScheduler:
-    def __init__(self, people_constraints, role_constraints):
-        self.people_constraints = people_constraints
-        self.role_constraints = {
-            slot: expand_roles(roles)
-            for slot, roles in role_constraints.items()
-        }
-
-    def generate_slot(self, volunteers, roles, partial_schedule):
-        jobs = JobsBoard(*roles)
-        matchmaker = MatchMaker(volunteers, self.people_constraints)
-        slot_scheduler = PartialSlotScheduler(jobs, matchmaker)
-        return slot_scheduler.generate_schedule(partial_schedule)
-
-    def generate_schedule(self, volunteers_by_slot, partial_schedule):
-        return {
-            slot: self.generate_slot(
-                volunteers_by_slot[slot],
-                self.role_constraints[slot],
-                partial_schedule[slot]
-            ) for slot, volunteers in volunteers_by_slot.items()}
 
 
 class TestPartialCompetitionScheduler(TestCase):

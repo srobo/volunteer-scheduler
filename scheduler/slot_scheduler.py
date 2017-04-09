@@ -18,7 +18,10 @@ class SlotScheduler:
             except MatchMakingException as ex:
                 pass
 
-        if not self.jobs.is_sufficient(list(schedule.values())):
-            raise SchedulingException('Not all necessary roles are filled')
+        filled_roles = list(schedule.values())
+
+        if not self.jobs.is_sufficient(filled_roles):
+            unfilled_roles = self.jobs.unfilled_necessary_roles(filled_roles)
+            raise SchedulingException('Not all necessary roles are filled - {}'.format(unfilled_roles))
 
         return schedule

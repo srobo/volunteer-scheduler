@@ -23,6 +23,15 @@ class JobsBoard:
 
         return necessary_roles == []
 
+    def unfilled_necessary_roles(self, filled_roles):
+        necessary_roles = self.minimum[:]
+
+        for role in filled_roles:
+            if role in necessary_roles:
+                necessary_roles.remove(role)
+
+        return necessary_roles
+
     def remove_role(self, role):
         if role in self.minimum:
             self.minimum.remove(role)
