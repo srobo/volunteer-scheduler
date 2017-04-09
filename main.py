@@ -22,13 +22,11 @@ def build_initial_schedule(available_slots, permanent_roles, tentative_schedule)
 
 
 def run():
-    volunteers_file = read_yaml_file('tmp/volunteers.yml')
-    role_constraints = read_yaml_file('tmp/constraints.yml')
+    volunteers = read_yaml_file('tmp/volunteers.yml')
+    availability = read_yaml_file('tmp/availability.yml')
+    role_constraints = read_yaml_file('tmp/role_constraints.yml')
     permanent_roles = read_yaml_file('tmp/permanent_roles.yml')
     tentative_schedule = read_yaml_file('tmp/tentative_schedule.yml')
-
-    raw_slots = volunteers_file['slots']
-    volunteer_profiles = volunteers_file['volunteers']
 
     people_constraints = {
         'intro-briefer': [can_speak, not_a_rookie],
@@ -43,7 +41,7 @@ def run():
         'kit-return': [understands_kit]
     }
 
-    available_slots = raw_slots.keys()
+    available_slots = availability.keys()
 
     initial_schedule = build_initial_schedule(
         available_slots,
@@ -51,8 +49,8 @@ def run():
         tentative_schedule)
 
     hydrated_volunteers_by_slot = {
-        k: hydrate_volunteers(v, volunteer_profiles)
-        for k, v in raw_slots.items()
+        k: hydrate_volunteers(v, volunteers)
+        for k, v in availability.items()
     }
 
     competing_seeds = [randint(-100000000, 100000000)

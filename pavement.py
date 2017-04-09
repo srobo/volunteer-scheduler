@@ -13,7 +13,7 @@ setup(
 @task
 @virtualenv(dir=virtualenv_directory)
 @needs(['vendor'])
-def run():
+def dev():
     sh("python3 main.py")
 
 
