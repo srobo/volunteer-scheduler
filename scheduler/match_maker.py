@@ -1,5 +1,5 @@
-from validator.validator import is_valid
-from scheduling_exception import SchedulingException
+from scheduler.validator.validator import is_valid
+from scheduler.scheduling_exception import SchedulingException
 
 
 class MatchMaker:

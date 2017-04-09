@@ -1,6 +1,3 @@
-from scheduling_exception import SchedulingException
-
-
 class JobsBoard:
     def __init__(self, minimum_roles, ideal_roles, maximum_roles):
         self.minimum = minimum_roles
@@ -33,7 +30,3 @@ class JobsBoard:
             self.ideal.remove(role)
         elif role in self.max:
             self.max.remove(role)
-        else:
-            raise SchedulingException(
-                'Cannot remove role [{}] as it is not available'.format(
-                    role))

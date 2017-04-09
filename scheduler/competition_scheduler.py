@@ -3,7 +3,7 @@ from jobs_board import JobsBoard
 from slot_scheduler import SlotScheduler
 
 
-def extract_roles(available_roles):
+def expand_roles(available_roles):
     min = []
     ideal = []
     max = []
@@ -27,7 +27,7 @@ class CompetitionScheduler:
     def __init__(self, people_constraints, role_constraints):
         self.people_constraints = people_constraints
         self.role_constraints = {
-            slot: extract_roles(roles)
+            slot: expand_roles(roles)
             for slot, roles in role_constraints.items()
         }
 
